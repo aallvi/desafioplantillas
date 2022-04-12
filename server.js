@@ -1,14 +1,14 @@
 const express = require('express')
-const fs = require('fs')
-const random = require('random')
 const app = express()
 
-const routerProductos = express.Router()
+app.set('view engine', 'ejs')
 
-app.use('/api/productos', routerProductos)
+app.set('views', './views')
 
-routerProductos.use(express.json())
-routerProductos.use(express.urlencoded({extended:true}))
+
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
+
 
 app.use(express.static('public'))
 
@@ -33,65 +33,23 @@ const productos = [{
 }
 ]
 
-routerProductos.get('/', (req,res) => {
 
-    res.json(productos)
+app.get('/productos', (req,res) => {
+
+    res.render('productos',{productos})
 } )
 
 
-routerProductos.post('/', (req,res) => {
+app.post('/productos', (req,res) => {
 
     productos.push(req.body)
     productos[productos.length-1].id = productos.length
 
-    res.json(productos)
-} )
-
-
-routerProductos.put('/:id', (req,res) => {
-    const id = parseInt(req.params.id)
-    
-
-
-   let found = productos.find(item => item.id === id)
-
-   if(!found){
-
-          
-          return res.json('No existe producto con ese id')
-   }
-
-
-    productos.map(function(item){
-        if(item.id === id){
-          item.title = req.body.title;
-          res.json( productos)
-
-        } 
-        
-       
-      });
-
-
+    res.render('productos',{productos: productos})
 
 } )
 
-routerProductos.delete('/:id', (req,res) => {
-    const id = parseInt(req.params.id)
 
-    let found = productos.find(item => item.id === id)
-
-   if(!found){
-
-          
-          return res.json('No existe producto con ese id')
-   }
-     const productosFiltrados = productos.filter(item => item.id !== id )
-     
-   
-
-    res.json( productosFiltrados)
-} )
 
 
 
